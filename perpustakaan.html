@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perpustakaan Digital Grand Library</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Latar Belakang Nuansa Perpustakaan Kayu Klasik & Hangat */
+        body {
+            background: linear-gradient(rgba(20, 10, 5, 0.85), rgba(30, 15, 8, 0.9)), 
+                        url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            color: #f4ebd0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(44, 24, 16, 0.95);
+            border-bottom: 4px solid #b8860b;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: #e6ccb2;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            flex: 1;
+            width: 100%;
+        }
+
+        /* Filter Kategori */
+        .category-filter {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: rgba(60, 36, 21, 0.8);
+            color: #f4ebd0;
+            border: 2px solid #b8860b;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: #b8860b;
+            color: #fff;
+            box-shadow: 0 0 12px rgba(184, 134, 11, 0.6);
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+            display: block;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            border: 3px solid #b8860b;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            outline: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            transition: 0.3s;
+        }
+
+        .search-box:focus {
+            border-color: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        }
+
+        /* Rak Buku (Grid Buku yang Tebal & Menarik) */
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .book-card {
+            background: linear-gradient(135deg, #3a2213, #25140a);
+            border: 3px solid #b8860b;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Efek Tebal pada Buku (Garis Punggung Buku / Halaman) */
+        .book-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 10px;
+            height: 100%;
+            background: #b8860b;
+        }
+
+        .book-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(184, 134, 11, 0.4);
+            border-color: #ffd700;
+        }
+
+        .book-category-tag {
+            font-size: 0.8rem;
+            background: #b8860b;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            width: fit-content;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .book-title {
+            font-size: 1.35rem;
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .book-desc {
+            font-size: 0.95rem;
+            color: #dcd0c0;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #b8860b, #996515);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: 0.2s;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #ffd700, #b8860b);
+            color: #25140a;
+        }
+
+        /* Modal Tampilan Baca Buku / Ensiklopedia */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #2b170c;
+            border: 4px solid #b8860b;
+            padding: 35px;
+            border-radius: 15px;
+            max-width: 750px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            color: #f4ebd0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px; right: 20px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .close-btn:hover { color: #fff; }
+
+        .modal-title {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #b8860b;
+            padding-bottom: 10px;
+        }
+
+        .modal-body {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: #e6ccb2;
+        }
+
+        .modal-body h4 {
+            color: #ffd700;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            background: rgba(20, 10, 5, 0.95);
+            color: #b8860b;
+            border-top: 2px solid #b8860b;
+            margin-top: 50px;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🏛️ Perpustakaan Digital Grand Library</h1>
+        <p>Jelajahi koleksi manga terlengkap, arsip kisah klasik, dan ensiklopedia dunia dalam suasana hangat</p>
+    </header>
+
+    <div class="container">
+        <!-- Kotak Pencarian -->
+        <input type="text" id="searchInput" class="search-box" placeholder="🔍 Cari judul buku, manga, atau topik pengetahuan umum..." onkeyup="searchBooks()">
+
+        <!-- Filter Kategori -->
+        <div class="category-filter">
+            <button class="filter-btn active" onclick="filterCategory('all')">Semua Koleksi</button>
+            <button class="filter-btn" onclick="filterCategory('manga')">Manga & Komik</button>
+            <button class="filter-btn" onclick="filterCategory('ensiklopedia')">Ensiklopedia & Pengetahuan</button>
+        </div>
+
+        <!-- Rak Buku (Grid Koleksi Tebal & Diperbanyak) -->
+        <div class="book-grid" id="bookContainer">
+
+            <!-- 1. Naruto -->
+            <div class="book-card" data-category="manga" data-title="naruto manga lengkap 1 - akhir uzumaki sasuke hokage">
+                <div>
+                    <span class="book-category-tag">Manga (Tebal)</span>
+                    <h3 class="book-title">1. Naruto (Volume 1 - Akhir)</h3>
+                    <p class="book-desc">Koleksi lengkap 72 Volume (700 Chapter). Perjalanan Uzumaki Naruto dari anak yang dikucilkan hingga menjadi Hokage Ketujuh.</p>
+                </div>
+                <button class="btn" onclick="openModal('Naruto: Edisi Lengkap (Vol. 1 - 72)', '<h4>Sinopsis & Alur Cerita Utama:</h4><p>Komik legendaris karya Masashi Kishimoto ini mengisahkan dunia Shinobi (Ninja). Terbagi menjadi dua bagian besar: Bagian I (masa kecil Naruto) dan Bagian II (masa remaja hingga Perang Dunia Shinobi Keempat).</p><h4>Arsip Volume Spesial:</h4><ul><li><strong>Volume 1-27:</strong> Masa Akademi Ninja, Ujian Chunin, hingga pertarungan emosional Sasuke di Lembah Akhir.</li><li><strong>Volume 28-72 (Shippuden):</strong> Penyelamatan Gaara, konflik Akatsuki, pertarungan melawan Pain, hingga puncak Perang Dunia Shinobi bersama Aliansi Lima Negara.</li></ul>')">Buka Arsip Buku</button>
+            </div>
+
+            <!-- 2. Detektif Conan -->
+            <div class="book-card" data-category="manga" data-title="detektif conan kasus misteri shinichi kudo organisasi hitam">
+                <div>
+                    <span class="book-category-tag">Manga Misteri</span>
+                    <h3 class="book-title">2. Detektif Conan (Arsip Kasus Lengkap)</h3>
+                    <p class="book-desc">Kumpulan arsip kasus pembunuhan berantai, teka-teki kode rahasia, dan konspirasi Organisasi Hitam.</p>
+                </div>
+                <button class="btn" onclick="openModal('Detektif Conan: Arsip Kasus & Misteri', '<h4>Profil Utama:</h4><p>Shinichi Kudo, detektif SMA jenius yang dipaksa meminum racun APTX 4869 oleh Gin dan Vodka hingga tubuhnya menyusut menjadi anak SD. Ia menyamar menjadi Conan Edogawa di rumah Kogoro Mouri.</p><h4>Daftar Kasus Besar:</h4><ul><li>Misteri Pertemuan di Kereta Misteri Bell Tree</li><li>Kasus Pembunuhan di Pulau Moonlight</li><li>Pertarungan akbar melawan Agen Rum dan Bourbon dari Organisasi Hitam</li></ul>')">Buka Arsip Buku</button>
+            </div>
+
+            <!-- 3. Doraemon -->
+            <div class="book-card" data-category="manga" data-title="doraemon petualangan nobita kantong ajaib fujiko f. inoue">
+                <div>
+                    <span class="book-category-tag">Manga Klasik</span>
+                    <h3 class="book-title">3. Doraemon (Koleksi Petualangan & Alat Ajaib)</h3>
+                    <p class="book-desc">Kisah lengkap kucing robot abad ke-22 yang menemani hari-hari Nobita Nobi dengan kantong ajaibnya.</p>
+                </div>
+                <button class="btn" onclick="openModal('Doraemon: Ensiklopedia Alat Ajaib', '<h4>Ringkasan Koleksi:</h4><p>Karya abadi Fujiko F. Fujio yang berisi ribuan cerita pendek serta film panjang petualangan (The Movie).</p><h4>Fitur & Alat Favorit:</h4><ul><li>Pintu Kemana Saja & Baling-Baling Bambu</li><li>Mesin Waktu & Kain Pembalik Masa</li><li>Petualangan epik di Dunia Sihir, Kerajaan Awan, dan Planet Misterius.</li></ul>')">Buka Arsip Buku</button>
+            </div>
+
+            <!-- 4. Crayon Sinchan -->
+            <div class="book-card" data-category="manga" data-title="crayon sinchan shinnosuke nohara komedi keluarga">
+                <div>
+                    <span class="book-category-tag">Manga Komedi</span>
+                    <h3 class="book-title">4. Crayon Sinchan (Edisi Komedi Spesial)</h3>
+                    <p class="book-desc">Kelakuan usil, jenaka, dan mengocok perut dari Shinnosuke Nohara bersama keluarga dan teman-teman Kasukabe.</p>
+                </div>
+                <button class="btn" onclick="openModal('Crayon Sinchan: Arsip Tingkah Kocak', '<h4>Sinopsis:</h4><p>Mengikuti keseharian anak berumur 5 tahun bernama Shinnosuke (Sinchan) yang hobi usil, menggoda wanita dewasa, dan membuat ibunya (Misae) serta ayahnya (Hiroshi) pusing kepala.</p><h4>Karakter Pendukung:</h4><p>Kazama, Nene, Bo-chan, Masao, anjing setia Shiro, serta adik bayinya Himawari.</p>')">Buka Arsip Buku</button>
+            </div>
+
+            <!-- 5. Buku Pengetahuan Umum Dunia -->
+            <div class="book-card" data-category="ensiklopedia" data-title="buku pengetahuan umum negara mata uang kemerdekaan presiden pejabat dunia">
+                <div>
+                    <span class="book-category-tag">Ensiklopedia</span>
+                    <h3 class="book-title">5. Ensiklopedia Pengetahuan Umum Dunia</h3>
+                    <p class="book-desc">Arsip lengkap profil negara di dunia, mata uang resmi, tanggal kemerdekaan, bentuk pemerintahan, hingga daftar presiden dan pejabat penting.</p>
+                </div>
+                <button class="btn" onclick="openModal('Ensiklopedia Pengetahuan Umum Global', '<h4>🌐 1. Republik Indonesia</h4><p><strong>Ibu Kota:</strong> Jakarta (menuju Ibu Kota Nusantara/IKN)<br><strong>Mata Uang:</strong> Rupiah (IDR)<br><strong>Kemerdekaan:</strong> 17 Agustus 1945<br><strong>Pemerintahan:</strong> Republik Presidensial<br><strong>Pejabat Utama:</strong> Presiden & Wakil Presiden (Kepala Negara & Pemerintahan)</p><hr style="border-color:#b8860b; margin: 15px 0;"><h4>🇺🇸 2. Amerika Serikat</h4><p><strong>Ibu Kota:</strong> Washington, D.C.<br><strong>Mata Uang:</strong> Dolar Amerika Serikat (USD)<br><strong>Kemerdekaan:</strong> 4 Juli 1776<br><strong>Pemerintahan:</strong> Republik Konstitusional Federal<br><strong>Pejabat Utama:</strong> Presiden & Kabinet Eksekutif</p><hr style="border-color:#b8860b; margin: 15px 0;"><h4>🇯🇵 3. Jepang</h4><p><strong>Ibu Kota:</strong> Tokyo<br><strong>Mata Uang:</strong> Yen Jepang (JPY)<br><strong>Hari Nasional:</strong> 11 Februari (Hari Pembentukan Negara)<br><strong>Pemerintahan:</strong> Monarki Konstitusional<br><strong>Pejabat Utama:</strong> Kaisar (Kepala Negara) & Perdana Menteri (Kepala Pemerintahan)</p><hr style="border-color:#b8860b; margin: 15px 0;"><h4>🇬🇧 4. Britania Raya (UK)</h4><p><strong>Ibu Kota:</strong> London<br><strong>Mata Uang:</strong> Pound Sterling (GBP)<br><strong>Pemerintahan:</strong> Monarki Konstitusional<br><strong>Pejabat Utama:</strong> Raja/Ratu (Kepala Negara) & Perdana Menteri (Kepala Pemerintahan)</p>')">Buka Arsip Buku</button>
+            </div>
+
+            <!-- 6. Tambahan Buku Bonus: Sejarah & Sains -->
+            <div class="book-card" data-category="ensiklopedia" data-title="buku ensiklopedia sains antariksa tata surya penemuan">
+                <div>
+                    <span class="book-category-tag">Ensiklopedia Sains</span>
+                    <h3 class="book-title">6. Ensiklopedia Sains & Antariksa (Bonus)</h3>
+                    <p class="book-desc">Mengenal keajaiban tata surya, galaksi bima sakti, hukum fisika dasar, dan penemuan-penemuan besar ilmuwan dunia.</p>
+                </div>
+                <button class="btn" onclick="openModal('Ensiklopedia Sains & Antariksa', '<h4>Eksplorasi Alam Semesta:</h4><ul><li><strong>Tata Surya:</strong> Matahari sebagai pusat, 8 planet (Merkurius, Venus, Bumi, Mars, Jupiter, Saturnus, Uranus, Neptunus), serta sabuk asteroid.</li><li><strong>Fisika & Hukum Alam:</strong> Hukum Gerak Newton, Teori Relativitas Einstein, dan Energi Kinetik.</li><li><strong>Penemuan Terbesar:</strong> Lampu pijar (Thomas Edison), Telepon (Alexander Graham Bell), dan Teori Gravitasi (Sir Isaac Newton).</li></ul>')">Buka Arsip Buku</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal Jendela Membaca -->
+    <div class="modal" id="bookModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 class="modal-title" id="modalTitle">Judul Buku</h2>
+            <div class="modal-body" id="modalBody">Isi buku...</div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Grand Library Digital. Dibuat khusus untuk ruang belajar dan literasi digital.</p>
+    </footer>
+
+    <script>
+        function openModal(title, content) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalBody').innerHTML = content;
+            document.getElementById('bookModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('bookModal').style.display = 'none';
+        }
+
+        // Fitur Filter Kategori
+        function filterCategory(category) {
+            let buttons = document.getElementsByClassName('filter-btn');
+            for (let btn of buttons) {
+                btn.classList.remove('active');
+            }
+            event.target.classList.add('active');
+
+            let cards = document.getElementsByClassName('book-card');
+            for (let card of cards) {
+                if (category === 'all' || card.getAttribute('data-category') === category) {
+                    card.style.display = "flex";
+                } else {
+                    card.style.display = "none";
+                }
+            }
+        }
+
+        // Fitur Pencarian Cerdas
+        function searchBooks() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let cards = document.getElementsByClassName('book-card');
+
+            for (let i = 0; i < cards.length; i++) {
+                let titleData = cards[i].getAttribute('data-title');
+                if (titleData.indexOf(input) > -1) {
+                    cards[i].style.display = "flex";
+                } else {
+                    cards[i].style.display = "none";
+                }
+            }
+        }
+
+        // Menutup modal jika area luar diklik
+        window.onclick = function(event) {
+            let modal = document.getElementById('bookModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+
+</body>
+</html>
